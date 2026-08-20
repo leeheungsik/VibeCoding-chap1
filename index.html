@@ -10,15 +10,22 @@
 <div class="app">
   <header class="app-header">
     <h1>할 일 관리</h1>
+
+    <!-- 진행률 표시 영역 (아직 계산 로직 없음, 정적 마크업만) -->
     <div class="progress">
       <div class="progress-bar">
         <div class="progress-bar-fill" id="progress-bar-fill"></div>
       </div>
       <span class="progress-text" id="progress-text">0/0 완료 (0%)</span>
     </div>
-    <div class="category-progress" id="category-progress"></div>
+    <div class="category-progress" id="category-progress">
+      <span><span class="dot" data-category="업무"></span>업무 0/0</span>
+      <span><span class="dot" data-category="개인"></span>개인 0/0</span>
+      <span><span class="dot" data-category="공부"></span>공부 0/0</span>
+    </div>
   </header>
 
+  <!-- 할 일 추가 입력 폼 (아직 제출 처리 로직 없음) -->
   <form class="add-form" id="add-form">
     <input
       type="text"
@@ -35,6 +42,7 @@
     <button type="submit">추가</button>
   </form>
 
+  <!-- 카테고리 필터 탭 (아직 클릭 동작 없음) -->
   <nav class="filter-tabs" id="filter-tabs">
     <button class="filter-tab active" data-filter="전체">전체</button>
     <button class="filter-tab" data-filter="업무">업무</button>
@@ -42,11 +50,13 @@
     <button class="filter-tab" data-filter="공부">공부</button>
   </nav>
 
+  <!-- 할 일 목록 영역 (아직 항목 렌더링 로직 없음, 비어있는 상태) -->
   <ul class="todo-list" id="todo-list"></ul>
 
-  <p class="empty-state" id="empty-state" hidden>할 일이 없습니다. 위에서 새로운 할 일을 추가해보세요.</p>
+  <p class="empty-state" id="empty-state">할 일이 없습니다. 위에서 새로운 할 일을 추가해보세요.</p>
 </div>
 
+<!-- 이후 단계에서 할 일 항목을 그릴 때 사용할 템플릿 -->
 <template id="todo-item-template">
   <li class="todo-item" data-id="">
     <label class="todo-check">
