@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>할 일 관리</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="app-header">
+    <h1>할 일 관리</h1>
+    <div class="progress">
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+      </div>
+      <span class="progress-text" id="progress-text">0/0 완료 (0%)</span>
+    </div>
+    <div class="category-progress" id="category-progress"></div>
+  </header>
+
+  <form class="add-form" id="add-form">
+    <input
+      type="text"
+      id="todo-input"
+      placeholder="할 일을 입력하세요"
+      maxlength="200"
+      autocomplete="off"
+    >
+    <select id="category-select">
+      <option value="업무">업무</option>
+      <option value="개인" selected>개인</option>
+      <option value="공부">공부</option>
+    </select>
+    <button type="submit">추가</button>
+  </form>
+
+  <nav class="filter-tabs" id="filter-tabs">
+    <button class="filter-tab active" data-filter="전체">전체</button>
+    <button class="filter-tab" data-filter="업무">업무</button>
+    <button class="filter-tab" data-filter="개인">개인</button>
+    <button class="filter-tab" data-filter="공부">공부</button>
+  </nav>
+
+  <ul class="todo-list" id="todo-list"></ul>
+
+  <p class="empty-state" id="empty-state" hidden>할 일이 없습니다. 위에서 새로운 할 일을 추가해보세요.</p>
+</div>
+
+<template id="todo-item-template">
+  <li class="todo-item" data-id="">
+    <label class="todo-check">
+      <input type="checkbox" class="todo-checkbox">
+      <span class="checkmark"></span>
+    </label>
+    <span class="todo-title"></span>
+    <span class="todo-category"></span>
+    <div class="todo-actions">
+      <button class="btn-edit" title="수정">수정</button>
+      <button class="btn-delete" title="삭제">삭제</button>
+    </div>
+  </li>
+</template>
+
+<script src="app.js"></script>
+</body>
+</html>
