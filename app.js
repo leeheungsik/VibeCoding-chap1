@@ -8,12 +8,14 @@
     addForm: document.getElementById("add-form"),
     input: document.getElementById("todo-input"),
     categorySelect: document.getElementById("category-select"),
+    filterTabs: document.getElementById("filter-tabs"),
     list: document.getElementById("todo-list"),
     emptyState: document.getElementById("empty-state"),
     itemTemplate: document.getElementById("todo-item-template"),
   };
 
   let todos = loadTodos();
+  let currentFilter = "전체";
 
   // ---- 1단계: localStorage 로드/저장 ----
 
@@ -124,13 +126,23 @@
     });
   }
 
+  // ---- 4단계: 카테고리 필터 ----
+
+  function getVisibleTodos() {
+    return currentFilter === "전체"
+      ? todos
+      : todos.filter((t) => t.category === currentFilter);
+  }
+
   // ---- 화면 렌더링 ----
 
   function renderList() {
     el.list.innerHTML = "";
-    el.emptyState.hidden = todos.length !== 0;
 
-    todos
+    const visible = getVisibleTodos();
+    el.emptyState.hidden = visible.length !== 0;
+
+    visible
       .slice()
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .forEach((todo) => {
@@ -171,6 +183,16 @@
     addTodo(el.input.value, el.categorySelect.value);
     el.input.value = "";
     el.input.focus();
+  });
+
+  el.filterTabs.addEventListener("click", (e) => {
+    const btn = e.target.closest(".filter-tab");
+    if (!btn) return;
+    currentFilter = btn.dataset.filter;
+    Array.from(el.filterTabs.children).forEach((tab) =>
+      tab.classList.toggle("active", tab === btn)
+    );
+    renderList();
   });
 
   render();
