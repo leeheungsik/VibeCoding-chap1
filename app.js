@@ -69,6 +69,14 @@
     render();
   }
 
+  // ---- 3단계: 완료 체크 ----
+
+  function toggleComplete(id) {
+    const todo = todos.find((t) => t.id === id);
+    if (!todo) return;
+    updateTodo(id, { isCompleted: !todo.isCompleted });
+  }
+
   function startEdit(node, todo) {
     node.classList.add("editing");
     const titleEl = node.querySelector(".todo-title");
@@ -128,6 +136,11 @@
       .forEach((todo) => {
         const node = el.itemTemplate.content.firstElementChild.cloneNode(true);
         node.dataset.id = todo.id;
+        node.classList.toggle("completed", todo.isCompleted);
+
+        const checkbox = node.querySelector(".todo-checkbox");
+        checkbox.checked = todo.isCompleted;
+        checkbox.addEventListener("change", () => toggleComplete(todo.id));
 
         const titleEl = node.querySelector(".todo-title");
         titleEl.textContent = todo.title;
