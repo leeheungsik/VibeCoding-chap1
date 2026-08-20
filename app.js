@@ -12,6 +12,9 @@
     list: document.getElementById("todo-list"),
     emptyState: document.getElementById("empty-state"),
     itemTemplate: document.getElementById("todo-item-template"),
+    progressBarFill: document.getElementById("progress-bar-fill"),
+    progressText: document.getElementById("progress-text"),
+    categoryProgress: document.getElementById("category-progress"),
   };
 
   let todos = loadTodos();
@@ -134,6 +137,39 @@
       : todos.filter((t) => t.category === currentFilter);
   }
 
+  // ---- 5단계: 진행률 보기 ----
+
+  function computeProgress(list) {
+    const total = list.length;
+    const done = list.filter((t) => t.isCompleted).length;
+    const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+    return { total, done, percent };
+  }
+
+  function renderProgress() {
+    const overall = computeProgress(todos);
+    el.progressBarFill.style.width = overall.percent + "%";
+    el.progressText.textContent = `${overall.done}/${overall.total} 완료 (${overall.percent}%)`;
+
+    el.categoryProgress.innerHTML = "";
+    CATEGORIES.forEach((category) => {
+      const categoryTodos = todos.filter((t) => t.category === category);
+      const { total, done } = computeProgress(categoryTodos);
+      const span = document.createElement("span");
+      const dot = document.createElement("span");
+      dot.className = "dot";
+      dot.dataset.category = category;
+      dot.style.background = {
+        업무: "var(--color-work)",
+        개인: "var(--color-personal)",
+        공부: "var(--color-study)",
+      }[category];
+      span.appendChild(dot);
+      span.appendChild(document.createTextNode(`${category} ${done}/${total}`));
+      el.categoryProgress.appendChild(span);
+    });
+  }
+
   // ---- 화면 렌더링 ----
 
   function renderList() {
@@ -175,6 +211,7 @@
   }
 
   function render() {
+    renderProgress();
     renderList();
   }
 
