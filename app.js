@@ -15,6 +15,9 @@
     progressText: document.getElementById("progress-text"),
     categoryProgress: document.getElementById("category-progress"),
     itemTemplate: document.getElementById("todo-item-template"),
+    exportBtn: document.getElementById("export-btn"),
+    importBtn: document.getElementById("import-btn"),
+    importFileInput: document.getElementById("import-file-input"),
   };
 
   let todos = loadTodos();
@@ -74,6 +77,63 @@
     const todo = todos.find((t) => t.id === id);
     if (!todo) return;
     updateTodo(id, { isCompleted: !todo.isCompleted });
+  }
+
+  // ---- 데이터 내보내기 / 가져오기 (JSON) ----
+
+  function exportTodos() {
+    const blob = new Blob([JSON.stringify(todos, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const date = new Date().toISOString().slice(0, 10);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `todos-${date}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function normalizeImportedTodo(raw) {
+    if (!raw || typeof raw.title !== "string") return null;
+    const title = raw.title.trim();
+    if (!title) return null;
+    const now = new Date().toISOString();
+    return {
+      id: generateId(),
+      title,
+      category: CATEGORIES.includes(raw.category) ? raw.category : "개인",
+      isCompleted: raw.isCompleted === true,
+      createdAt: typeof raw.createdAt === "string" ? raw.createdAt : now,
+      updatedAt: now,
+    };
+  }
+
+  function importTodosFromJson(jsonText) {
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonText);
+    } catch (e) {
+      alert("올바른 JSON 파일이 아닙니다.");
+      return;
+    }
+    if (!Array.isArray(parsed)) {
+      alert("올바른 형식의 할 일 목록 파일이 아닙니다.");
+      return;
+    }
+
+    const imported = parsed.map(normalizeImportedTodo).filter(Boolean);
+    if (imported.length === 0) {
+      alert("가져올 수 있는 할 일이 없습니다.");
+      return;
+    }
+
+    todos = todos.concat(imported);
+    saveTodos();
+    render();
+    alert(`${imported.length}개의 할 일을 가져왔습니다.`);
   }
 
   function computeProgress(list) {
@@ -215,6 +275,21 @@
       tab.classList.toggle("active", tab === btn)
     );
     renderList();
+  });
+
+  el.exportBtn.addEventListener("click", exportTodos);
+
+  el.importBtn.addEventListener("click", () => {
+    el.importFileInput.click();
+  });
+
+  el.importFileInput.addEventListener("change", () => {
+    const file = el.importFileInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => importTodosFromJson(String(reader.result));
+    reader.readAsText(file);
+    el.importFileInput.value = "";
   });
 
   render();
